@@ -1,36 +1,39 @@
 package com.example.xyzreader.ui;
 
-import android.support.v4.content.Loader;
-import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.view.ViewPager;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.xyzreader.R;
+import com.example.xyzreader.data.Article;
 import com.example.xyzreader.data.ArticleLoader;
-import com.example.xyzreader.data.ItemsContract;
+import com.example.xyzreader.data.ArticlesLoader;
+
+import java.util.ArrayList;
 
 
-public class ArticleDetailActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ArticleDetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Article> {
 
-    private Cursor mCursor;
-    private long mStartId;
 
-    private long mSelectedItemId;
 
-    private ViewPager mPager;
-    private MyPagerAdapter mPagerAdapter;
+    public static String EXTRA_ID = "id";
+    public static String EXTRA_NEXT_ID = "next_id";
 
-    private ProgressBar mProgressBar;
+    private int id;
+    private int next_id;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,101 +41,50 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_article_detail);
 
-        mProgressBar = findViewById(R.id.progressbar);
+        if (getIntent() != null){
 
-        getSupportLoaderManager().initLoader(0, null, this);
+            id = getIntent().getIntExtra(EXTRA_ID,0);
+            next_id  = getIntent().getIntExtra(EXTRA_NEXT_ID,-1);
 
-        mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
-        mPager = findViewById(R.id.pager);
-        mPager.setAdapter(mPagerAdapter);
-        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                if (mCursor != null) {
-                    mCursor.moveToPosition(position);
-                }
-                mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-
-        if (savedInstanceState == null) {
-            if (getIntent() != null && getIntent().getData() != null) {
-                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
-                mSelectedItemId = mStartId;
-            }
+            //TODO: pegar o scroll quando rotacionado
         }
+
+        Bundle args = new Bundle();
+        args.putInt(EXTRA_ID,id);
+        getSupportLoaderManager().restartLoader(0, args, this);
+
     }
 
     @NonNull
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        mProgressBar.setVisibility(View.VISIBLE);
-        return ArticleLoader.newAllArticlesInstance(this);
+    public Loader<Article> onCreateLoader(int id, @Nullable Bundle args) {
+        return new ArticleLoader(this,args);
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Article> loader, Article data) {
+
+        if (data != null) {
+            loadFragment(data);
+        }
+    }
+
+    private void loadFragment(Article article) {
+
+        //TODO: fazer aqui o carregamento estatico
+        Fragment fragment = ArticleDetailFragment.newInstance(article);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_content, fragment);
+        fragmentTransaction.addToBackStack(fragment.toString());
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragmentTransaction.commit();
     }
 
 
     @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
-        mCursor = cursor;
-        mPagerAdapter.notifyDataSetChanged();
-
-        // Select the start ID
-        if (mStartId > 0) {
-            mCursor.moveToFirst();
-            // TODO: optimize
-            while (!mCursor.isAfterLast()) {
-                if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
-                    final int position = mCursor.getPosition();
-                    mPager.setCurrentItem(position, false);
-                    break;
-                }
-                mCursor.moveToNext();
-            }
-            mStartId = 0;
-        }
-
-        mProgressBar.setVisibility(View.INVISIBLE);
+    public void onLoaderReset(@NonNull Loader<Article> loader) {
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        mCursor = null;
-        mPagerAdapter.notifyDataSetChanged();
-    }
-
-
-    private class MyPagerAdapter extends FragmentPagerAdapter  {
-        MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            super.setPrimaryItem(container, position, object);
-            ArticleDetailFragment fragment = (ArticleDetailFragment) object;
-
-        }
-
-        @Override
-        public android.support.v4.app.Fragment getItem(int position) {
-            mCursor.moveToPosition(position);
-            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
-        }
-
-        @Override
-        public int getCount() {
-            return (mCursor != null) ? mCursor.getCount() : 0;
-        }
-    }
 }

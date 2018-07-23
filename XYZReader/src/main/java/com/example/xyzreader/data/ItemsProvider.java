@@ -37,6 +37,9 @@ public class ItemsProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
+        if (getContext() != null) {
+            getContext().getContentResolver();
+        }
         mOpenHelper = new ItemsDatabase(getContext());
 		return true;
 	}
@@ -56,6 +59,11 @@ public class ItemsProvider extends ContentProvider {
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+
+	    if(mOpenHelper==null){
+            mOpenHelper = new ItemsDatabase(getContext());
+        }
+
 		final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 		final SelectionBuilder builder = buildSelection(uri);
 		Cursor cursor = builder.where(selection, selectionArgs).query(db, projection, sortOrder);

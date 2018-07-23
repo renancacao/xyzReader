@@ -1,44 +1,88 @@
 package com.example.xyzreader.data;
 
 import android.content.Context;
-import android.net.Uri;
-import android.support.v4.content.CursorLoader;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.content.AsyncTaskLoader;
 
-/**
- * Helper for loading a list of articles or a single article.
- */
-public class ArticleLoader extends CursorLoader {
-    public static ArticleLoader newAllArticlesInstance(Context context) {
-        return new ArticleLoader(context, ItemsContract.Items.buildDirUri());
+import com.example.xyzreader.ui.ArticleDetailActivity;
+
+@SuppressWarnings("FieldCanBeLocal")
+public class ArticleLoader extends AsyncTaskLoader<Article> {
+
+    private final Bundle args;
+    private Article article = null;
+
+    private String[] PROJECTION = {
+            ItemsContract.Items._ID,
+            ItemsContract.Items.TITLE,
+            ItemsContract.Items.PUBLISHED_DATE,
+            ItemsContract.Items.AUTHOR,
+            ItemsContract.Items.PHOTO_URL,
+            ItemsContract.Items.BODY};
+
+    private int _ID = 0;
+    private int TITLE = 1;
+    private int PUBLISHED_DATE = 2;
+    private int AUTHOR = 3;
+    private int PHOTO_URL = 4;
+    private int BODY = 5;
+
+    public ArticleLoader(@NonNull Context context, Bundle args) {
+        super(context);
+        this.args = args;
     }
 
-    public static ArticleLoader newInstanceForItemId(Context context, long itemId) {
-        return new ArticleLoader(context, ItemsContract.Items.buildItemUri(itemId));
+    @Override
+    protected void onStartLoading() {
+        if(article == null){
+            forceLoad();
+        }
+        else {
+            deliverResult(article);
+        }
     }
 
-    private ArticleLoader(Context context, Uri uri) {
-        super(context, uri, Query.PROJECTION, null, null, ItemsContract.Items.DEFAULT_SORT);
+    @Override
+    public Article loadInBackground() {
+
+        int id;
+
+        if(args != null && args.containsKey(ArticleDetailActivity.EXTRA_ID)){
+            id = args.getInt(ArticleDetailActivity.EXTRA_ID);
+        }
+        else{
+            return null;
+        }
+
+        article = null;
+
+
+        Cursor c = getContext().getContentResolver().query(ItemsContract.Items.buildDirUri(),PROJECTION,
+                "_ID=?",
+                new String[]{String.valueOf(id)},
+                ItemsContract.Items.DEFAULT_SORT);
+
+        if (c != null) {
+            if (c.moveToFirst()) {
+                article = new Article();
+
+                article.setId(c.getInt(_ID));
+                article.setAuthor(c.getString(AUTHOR));
+                article.setBody(c.getString(BODY));
+                article.setPhoto(c.getString(PHOTO_URL));
+                article.setPublishDate(c.getString(PUBLISHED_DATE));
+                article.setTitle(c.getString(TITLE));
+                article.setAuthor(c.getString(AUTHOR));
+            }
+
+            c.close();
+
+        }
+
+        return article;
     }
 
-    public interface Query {
-        String[] PROJECTION = {
-                ItemsContract.Items._ID,
-                ItemsContract.Items.TITLE,
-                ItemsContract.Items.PUBLISHED_DATE,
-                ItemsContract.Items.AUTHOR,
-                ItemsContract.Items.THUMB_URL,
-                ItemsContract.Items.PHOTO_URL,
-                ItemsContract.Items.ASPECT_RATIO,
-                ItemsContract.Items.BODY,
-        };
 
-        int _ID = 0;
-        int TITLE = 1;
-        int PUBLISHED_DATE = 2;
-        int AUTHOR = 3;
-        int THUMB_URL = 4;
-        int PHOTO_URL = 5;
-        int ASPECT_RATIO = 6;
-        int BODY = 7;
-    }
 }
