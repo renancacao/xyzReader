@@ -1,7 +1,7 @@
 <resources>
     <!-- detail -->
 
-    <dimen name="card_elevation">8dp</dimen>
+    <dimen name="card_elevation">1dp</dimen>
     <dimen name="card_margin">4dp</dimen>
     <dimen name="tall_toolbar_height">112dp</dimen>
     <dimen name="tall_toolbar_image">224dp</dimen>

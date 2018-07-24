@@ -18,7 +18,6 @@ public class TextAdapter extends RecyclerView.Adapter<TextAdapter.TextViewHoder>
 
     public TextAdapter(List<String> data) {
         this.data = data;
-        this.data.add(0," ");
     }
 
     @NonNull
@@ -34,7 +33,7 @@ public class TextAdapter extends RecyclerView.Adapter<TextAdapter.TextViewHoder>
 
     @Override
     public void onBindViewHolder(@NonNull TextViewHoder holder, int position) {
-        holder.textView.setText(data.get(position));
+        holder.textView.setText(data.get(position).trim());
     }
 
     @Override

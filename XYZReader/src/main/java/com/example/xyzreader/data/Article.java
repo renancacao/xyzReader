@@ -78,7 +78,7 @@ public class Article {
     }
 
     public void setBody(String body) {
-        this.body = Html.fromHtml(body).toString();
+        this.body = body;
     }
 
     public List<String> getSplitBody(){

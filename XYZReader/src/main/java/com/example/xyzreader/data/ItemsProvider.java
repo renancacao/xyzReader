@@ -11,11 +11,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemsProvider extends ContentProvider {
+	public static final String CALL_EXIST = "exists";
+	public static final String CALL_EXIST_RESPONSE = "exist_response";
 	private SQLiteOpenHelper mOpenHelper;
 
 	interface Tables {
@@ -60,10 +65,6 @@ public class ItemsProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-	    if(mOpenHelper==null){
-            mOpenHelper = new ItemsDatabase(getContext());
-        }
-
 		final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 		final SelectionBuilder builder = buildSelection(uri);
 		Cursor cursor = builder.where(selection, selectionArgs).query(db, projection, sortOrder);
@@ -72,6 +73,33 @@ public class ItemsProvider extends ContentProvider {
         }
         return cursor;
 	}
+
+	private boolean exists(String serverid){
+		final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+		Cursor c = db.rawQuery("select " + ItemsContract.ItemsColumns.SERVER_ID + " " +
+				"from "+ Tables.ITEMS + " " +
+				"where " + ItemsContract.ItemsColumns.SERVER_ID + "='"+ serverid +"'",null);
+
+		boolean result = c.moveToFirst();
+
+		c.close();
+
+		return result;
+	}
+
+	@Nullable
+	@Override
+	public Bundle call(@NonNull String method, @Nullable String arg, @Nullable Bundle extras) {
+
+		Bundle result = new Bundle();
+		if (CALL_EXIST.equals(method)){
+			result.putBoolean(CALL_EXIST_RESPONSE, exists(arg));
+		}
+
+		return result;
+	}
+
+
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
