@@ -1,4 +1,7 @@
 <resources>
     <!-- detail -->
     <integer name="list_column_count">2</integer>
+    <bool name="twoPanel">false</bool>
+    <bool name="load_body">false</bool>
+
 </resources>

@@ -3,9 +3,7 @@ package com.example.xyzreader.ui;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -19,11 +17,9 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
 
 
 
-    public static String EXTRA_ID = "id";
-    public static String EXTRA_NEXT_ID = "next_id";
+    public static final String EXTRA_ID = "id";
 
     private int id;
-    private int next_id;
 
 
     @Override
@@ -35,7 +31,6 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
         if (getIntent() != null){
 
             id = getIntent().getIntExtra(EXTRA_ID,0);
-            next_id  = getIntent().getIntExtra(EXTRA_NEXT_ID,-1);
 
             //TODO: pegar o scroll quando rotacionado
         }

@@ -2,6 +2,7 @@ package com.example.xyzreader.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.AsyncTaskLoader;
 
@@ -10,23 +11,40 @@ import java.util.ArrayList;
 @SuppressWarnings("FieldCanBeLocal")
 public class ArticlesLoader extends AsyncTaskLoader<ArrayList<Article>> {
 
+    public static final String ARG_LOAD_BODY = "loadbody";
+    private final Bundle args;
     private ArrayList<Article> articles;
 
-    private String[] PROJECTION = {
-            ItemsContract.Items._ID,
-            ItemsContract.Items.TITLE,
-            ItemsContract.Items.PUBLISHED_DATE,
-            ItemsContract.Items.AUTHOR,
-            ItemsContract.Items.THUMB_URL};
+    private final String _ID = ItemsContract.Items._ID;
+    private final String TITLE = ItemsContract.Items.TITLE;
+    private final String PUBLISHED_DATE = ItemsContract.Items.PUBLISHED_DATE;
+    private final String AUTHOR = ItemsContract.Items.AUTHOR;
+    private final String THUMB_URL = ItemsContract.Items.THUMB_URL;
+    private final String BODY = ItemsContract.Items.BODY;
+    private final String PHOTO = ItemsContract.Items.PHOTO_URL;
 
-    private int _ID = 0;
-    private int TITLE = 1;
-    private int PUBLISHED_DATE = 2;
-    private int AUTHOR = 3;
-    private int THUMB_URL = 4;
+    private final String[] PROJ = {
+            _ID,
+            TITLE,
+            PUBLISHED_DATE,
+            AUTHOR,
+            THUMB_URL,
+            BODY,
+            PHOTO};
 
-    public ArticlesLoader(@NonNull Context context) {
+    private final String[] PROJ_NO_BODY = {
+            _ID,
+            TITLE,
+            PUBLISHED_DATE,
+            AUTHOR,
+            THUMB_URL,
+            PHOTO};
+
+
+
+    public ArticlesLoader(@NonNull Context context, Bundle args) {
         super(context);
+        this.args = args;
     }
 
     @Override
@@ -44,10 +62,23 @@ public class ArticlesLoader extends AsyncTaskLoader<ArrayList<Article>> {
 
         articles = null;
 
-        Cursor c = getContext().getContentResolver().query(ItemsContract.Items.buildDirUri(),PROJECTION,
-                null,
-                null,
-                ItemsContract.Items.DEFAULT_SORT);
+        boolean loadBody = args.getBoolean(ARG_LOAD_BODY);
+
+        Cursor c;
+
+        if(loadBody){
+            c = getContext().getContentResolver().query(ItemsContract.Items.buildDirUri(), PROJ,
+                  null,
+                  null,
+                  ItemsContract.Items.DEFAULT_SORT);
+        }
+        else{
+            c = getContext().getContentResolver().query(ItemsContract.Items.buildDirUri(), PROJ_NO_BODY,
+                    null,
+                    null,
+                    ItemsContract.Items.DEFAULT_SORT);
+        }
+
 
         if (c != null) {
             if (c.moveToFirst()) {
@@ -55,12 +86,18 @@ public class ArticlesLoader extends AsyncTaskLoader<ArrayList<Article>> {
                 do {
 
                     Article art = new Article();
-                    art.setId(c.getInt(_ID));
-                    art.setAuthor(c.getString(AUTHOR));
-                    art.setPublishDate(c.getString(PUBLISHED_DATE));
-                    art.setThumb(c.getString(THUMB_URL));
-                    art.setTitle(c.getString(TITLE));
-                    art.setAuthor(c.getString(AUTHOR));
+                    art.setId(c.getInt(c.getColumnIndex(_ID)));
+                    art.setAuthor(c.getString(c.getColumnIndex(AUTHOR)));
+                    art.setPublishDate(c.getString(c.getColumnIndex(PUBLISHED_DATE)));
+                    art.setThumb(c.getString(c.getColumnIndex(THUMB_URL)));
+                    art.setTitle(c.getString(c.getColumnIndex(TITLE)));
+                    art.setAuthor(c.getString(c.getColumnIndex(AUTHOR)));
+                    art.setPhoto(c.getString(c.getColumnIndex(PHOTO)));
+
+                    if (loadBody){
+                        art.setBody(c.getString(c.getColumnIndex(BODY)));
+                    }
+
                     articles.add(art);
                 } while (c.moveToNext());
             }

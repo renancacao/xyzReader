@@ -1,5 +1,5 @@
 <resources>
-    <!-- detail -->
+    <integer name="list_column_count">1</integer>
     <bool name="twoPanel">true</bool>
-
+    <bool name="load_body">true</bool>
 </resources>

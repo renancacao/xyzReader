@@ -11,20 +11,20 @@
         android:layout_height="?actionBarSize"
         android:background="@color/colorPrimary"
         android:fitsSystemWindows="true"
-        android:elevation="4dp">
+        android:elevation="4dp"
+        tools:targetApi="lollipop">
 
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:layout_gravity="bottom"
-            android:fitsSystemWindows="true"
-            app:layout_collapseMode="pin">
+            app:layout_collapseMode="pin"
+            android:fitsSystemWindows="true">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                >
+                android:fitsSystemWindows="true">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -43,7 +43,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="8dp"
                     android:adjustViewBounds="true"
-                    android:contentDescription="Refresh"
+                    android:contentDescription="@string/refresh"
                     android:cropToPadding="false"
                     android:src="@drawable/ic_refresh_24dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -52,22 +52,39 @@
 
             </android.support.constraint.ConstraintLayout>
 
-
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingLeft="@dimen/list_side_margin"
-        android:paddingRight="@dimen/list_side_margin"
-        android:layout_marginTop="?actionBarSize"
-        android:paddingTop="@dimen/list_side_margin"
-        android:scrollbarStyle="outsideOverlay" />
+        android:orientation="horizontal"
+        android:layout_marginTop="?actionBarSize">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".35"
+            android:clipToPadding="false"
+            android:padding="@dimen/list_side_margin"
+            android:scrollbarStyle="outsideOverlay" >
+        </android.support.v7.widget.RecyclerView>
+
+        <fragment
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".65"
+            android:padding="@dimen/list_side_margin"
+            android:id="@+id/fragment_content"
+            android:name="com.example.xyzreader.ui.ArticleDetailFragment"
+            tools:layout="@layout/fragment_article_detail"
+            />
+
+    </LinearLayout>
+
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -75,6 +92,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:elevation="10dp"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        tools:targetApi="lollipop" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.Html;
-import android.text.format.Time;
 import android.util.Log;
 
 import com.example.xyzreader.remote.RemoteEndpointUtil;
@@ -31,11 +30,14 @@ public class UpdaterService extends IntentService {
     public static final String EXTRA_STATUS
             = "com.example.xyzreader.intent.extra.STATUS";
 
-    public static final int START=0;
-    public static final int NOTHING=1;
-    public static final int NEW_CONTET=2;
-    public static final int ERROR=3;
-    public static final int RELOAD = 4;
+    public static final String EXTRA_DATE
+            = "com.example.xyzreader.intent.extra.DATE";
+
+    public static final int START=100;
+    public static final int NOTHING=101;
+    public static final int NEW_CONTET=102;
+    public static final int ERROR=103;
+    public static final int RELOAD = 104;
 
     public UpdaterService() {
         super(TAG);
@@ -43,22 +45,25 @@ public class UpdaterService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Time time = new Time();
+
+        String date = intent.getStringExtra(EXTRA_DATE);
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         if (ni == null || !ni.isConnected()) {
             Log.w(TAG, "Not online, not refreshing.");
             sendStickyBroadcast(
-                    new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, ERROR));
+                    new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, ERROR)
+                            .putExtra(EXTRA_DATE,date));
             return;
         }
 
         sendStickyBroadcast(
-                new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, START));
+                new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, START)
+                        .putExtra(EXTRA_DATE,date));
 
         // Don't even inspect the intent, we only do one thing, and that's fetch content.
-        ArrayList<ContentProviderOperation> cpo = new ArrayList<ContentProviderOperation>();
+        ArrayList<ContentProviderOperation> cpo = new ArrayList<>();
 
         Uri dirUri = ItemsContract.Items.buildDirUri();
 
@@ -83,7 +88,8 @@ public class UpdaterService extends IntentService {
                 if (args != null && !args.getBoolean(ItemsProvider.CALL_EXIST_RESPONSE)) {
 
                     sendStickyBroadcast(
-                            new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, NEW_CONTET));
+                            new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, NEW_CONTET)
+                                    .putExtra(EXTRA_DATE,date));
 
                     newItens= true;
                     ContentValues values = new ContentValues();
@@ -105,17 +111,20 @@ public class UpdaterService extends IntentService {
 
             if (newItens){
                 sendStickyBroadcast(
-                        new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, RELOAD));
+                        new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, RELOAD)
+                                .putExtra(EXTRA_DATE,date));
             }
             else{
                 sendStickyBroadcast(
-                        new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, NOTHING));
+                        new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, NOTHING)
+                                .putExtra(EXTRA_DATE,date));
             }
 
         } catch (JSONException | RemoteException | OperationApplicationException e) {
             Log.e(TAG, "Error updating content.", e);
             sendStickyBroadcast(
-                    new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, ERROR));
+                    new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_STATUS, ERROR)
+                            .putExtra(EXTRA_DATE,date));
         }
 
 

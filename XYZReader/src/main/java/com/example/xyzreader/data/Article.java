@@ -1,6 +1,5 @@
 package com.example.xyzreader.data;
 
-import android.text.Html;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ public class Article {
     private String author;
     private String thumb;
     private String photo;
-    private double aspectRatio;
     private String body;
 
     Article() {
@@ -67,10 +65,6 @@ public class Article {
 
     public void setPhoto(String photo) {
         this.photo = photo;
-    }
-
-    public void setAspectRatio(double aspectRatio) {
-        this.aspectRatio = aspectRatio;
     }
 
     public String getBody() {

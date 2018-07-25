@@ -2,5 +2,13 @@
 
     <string name="app_name">XYZ Reader</string>
     <string name="image_description">Imagem de capa</string>
+    <string name="share_using">Chosse app to share the article.</string>
+    <string name="error_connecting">Error connecting to server</string>
+    <string name="content_updated">Updated content</string>
+    <string name="processing">Processing:</string>
+    <string name="stories">storie(s)</string>
+    <string name="connecting">Connecting to the server</string>
+    <string name="refresh">Refresh</string>
+
 
 </resources>

@@ -11,37 +11,36 @@
     android:focusable="true"
     android:background="@color/white"
     android:elevation="@dimen/card_elevation"
-    >
+    tools:targetApi="lollipop">
 
     <ImageView
         android:id="@+id/thumbnail"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:adjustViewBounds="false"
         android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/image_description" />
+        android:contentDescription="@string/image_description"/>
 
     <TextView
         android:id="@+id/article_title"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         style="@style/Title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/thumbnail"
+        app:layout_constraintStart_toEndOf="@+id/thumbnail"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Título" />
 
     <TextView
         android:id="@+id/article_subtitle"
         style="@style/SubText"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/thumbnail"
         app:layout_constraintTop_toBottomOf="@id/article_title"
         tools:text="Subtitulo" />
 

@@ -23,15 +23,14 @@ import java.util.Locale;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
-    private SimpleDateFormat dateFormat =
+    private final SimpleDateFormat dateFormat =
             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss", Locale.getDefault());
-    private SimpleDateFormat outputFormat =
+    private final SimpleDateFormat outputFormat =
             new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
-    private String TAG = "ListAdapter";
+    private final GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
 
     private ArrayList<Article> articles;
-    private ListAdapterListener listener;
+    private final ListAdapterListener listener;
 
     public ListAdapter(ArrayList<Article> articles, ListAdapterListener listener) {
         this.articles = articles;
@@ -67,8 +66,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         try {
             return dateFormat.parse(date);
         } catch (ParseException ex) {
-            Log.e(TAG, ex.getMessage());
-            Log.i(TAG, "passing today's date");
+            Log.i("ADAPTER", "passing today's date");
             return new Date();
         }
     }
@@ -99,6 +97,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         Picasso.get().load(article.getThumb()).into(holder.thumbnailView);
     }
 
+    public void setArticles(ArrayList<Article> articles) {
+        this.articles = articles;
+    }
+
     public interface ListAdapterListener {
         void onItemClick(int pos);
     }
@@ -110,9 +112,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView thumbnailView;
-        TextView titleView;
-        TextView subtitleView;
+        final ImageView thumbnailView;
+        final TextView titleView;
+        final TextView subtitleView;
 
         ViewHolder(View view) {
             super(view);

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class TextAdapter extends RecyclerView.Adapter<TextAdapter.TextViewHoder> {
 
-    private List<String> data;
+    private final List<String> data;
 
 
     public TextAdapter(List<String> data) {
@@ -43,7 +43,7 @@ public class TextAdapter extends RecyclerView.Adapter<TextAdapter.TextViewHoder>
 
     class TextViewHoder extends RecyclerView.ViewHolder {
 
-        TextView textView;
+        final TextView textView;
 
         TextViewHoder(View itemView) {
             super(itemView);

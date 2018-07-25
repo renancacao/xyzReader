@@ -11,7 +11,7 @@
     android:focusable="true"
     android:background="@color/white"
     android:elevation="@dimen/card_elevation"
-    >
+    tools:targetApi="lollipop">
 
      <ImageView
         android:id="@+id/thumbnail"

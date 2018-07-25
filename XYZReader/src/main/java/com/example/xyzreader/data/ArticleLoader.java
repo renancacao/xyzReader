@@ -14,7 +14,7 @@ public class ArticleLoader extends AsyncTaskLoader<Article> {
     private final Bundle args;
     private Article article = null;
 
-    private String[] PROJECTION = {
+    private final String[] PROJECTION = {
             ItemsContract.Items._ID,
             ItemsContract.Items.TITLE,
             ItemsContract.Items.PUBLISHED_DATE,
@@ -22,12 +22,12 @@ public class ArticleLoader extends AsyncTaskLoader<Article> {
             ItemsContract.Items.PHOTO_URL,
             ItemsContract.Items.BODY};
 
-    private int _ID = 0;
-    private int TITLE = 1;
-    private int PUBLISHED_DATE = 2;
-    private int AUTHOR = 3;
-    private int PHOTO_URL = 4;
-    private int BODY = 5;
+    private final int _ID = 0;
+    private final int TITLE = 1;
+    private final int PUBLISHED_DATE = 2;
+    private final int AUTHOR = 3;
+    private final int PHOTO_URL = 4;
+    private final int BODY = 5;
 
     public ArticleLoader(@NonNull Context context, Bundle args) {
         super(context);
